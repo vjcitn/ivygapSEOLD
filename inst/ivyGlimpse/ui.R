@@ -44,7 +44,7 @@ ui = fluidPage(
  sidebarLayout(
   sidebarPanel(
    fluidRow(
-      helpText("IvyGAP explorer: expression, clinical, and image-based data for glioblastoma patients; see background panel for more details")
+      helpText("IvyGAP explorer: expression, clinical, and image-based data for glioblastoma patients; see backgrouund panel for more details")
    ),
    fluidRow(
       helpText("subBlockDetail features for selectables scatterplot")
@@ -65,17 +65,17 @@ ui = fluidPage(
     tabPanel("basic",
      fluidRow(
       column( 
-       fluidRow( column(helpText("hover over for tumor donor ID; partition data by dragging over points to select"), width=5) ),
-       fluidRow( column(plotlyOutput("xyplot", width="350px"), width=5) ),
+       fluidRow( helpText("hover over for tumor donor ID; partition data by dragging over points to select") ),
+       fluidRow( plotlyOutput("xyplot") ), width=5 ),
       column( 
-       fluidRow( helpText("Kaplan-Meier, grp=1 for selected donors"), width=5 ),
-       fluidRow( plotOutput("plot2", width="350px") ), width=5)
+       fluidRow( helpText("Kaplan-Meier, grp=1 for selected donors") ),
+       fluidRow( plotOutput("plot2") ), width=5)
       ),
      fluidRow(
-      column( plotOutput("boxes1", width="350px"), width=5 ),
-      column( plotOutput("boxes2", width="350px"), width=5 )
+      column( plotOutput("boxes1"), width=5 ),
+      column( plotOutput("boxes2"), width=5 )
       )
-     )),
+     ),
     tabPanel("vocab", tableOutput("vocab")),
     tabPanel("background", 
      fluidRow(
