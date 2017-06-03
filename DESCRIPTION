@@ -1,0 +1,13 @@
+Package: ivygapSE
+Title: A SummarizedExperiment for Ivy-GAP data
+Description: A SummarizedExperiment for Ivy-GAP data
+Version: 0.0.1
+Author: Vince Carey
+Suggests: 
+Depends: SummarizedExperiment
+Imports: shiny, survival, survminer, hwriter, plotly, ggplot2
+Maintainer: VJ Carey <stvjc@channing.harvard.edu>
+License: Artistic-2.0
+LazyLoad: yes
+BiocViews: variants
+RoxygenNote: 6.0.1.9000

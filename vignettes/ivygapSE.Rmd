@@ -1,0 +1,94 @@
+---
+title: "ivygapSE -- Bioconductor container for Ivy-GAP expression and metadata"
+author: "Vincent J. Carey, stvjc at channing.harvard.edu"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{ivygapSE -- SummarizedExperiment for Ivy-GAP}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::pdf_document:
+    toc: yes
+    number_sections: yes
+  BiocStyle::html_document:
+    highlight: pygments
+    number_sections: yes
+    theme: united
+    toc: yes
+---
+
+# Introduction
+
+CSV files from the Ivy-GAP project have been assembled into a SummarizedExperiment instance.
+```{r loadup, echo=FALSE}
+suppressPackageStartupMessages({
+library(SummarizedExperiment)
+library(ivygapSE)
+})
+```
+```{r chk}
+library(ivygapSE)
+data(ivySE)
+ivySE
+```
+There are several types of metadata collected with the object, including the
+README.txt (use `cat(metadata(ivySE)$README, sep="\n")` to see this in R),
+the URL where data were retrieved, 
+a character vector (builder) with the R code for creating (much of) the SummarizedExperiment, 
+and two tables of tumor-specific and
+block-specific information.
+
+# Summary information
+
+The number of RNA-seq samples is `r ncol(ivySE)`.  The FPKM matrix has dimensions
+```{r lkd}
+dim(ivySE)
+```
+
+There are 42 different donors.
+```{r lkse}
+length(unique(metadata(ivySE)$tumorDetails$donor_id))
+```
+However, only 37 donors contributed tumor RNA:
+```{r lkcon}
+sum(metadata(ivySE)$tumorDetails$tumor_name %in% ivySE$tumor_name)
+```
+```{r getsbd,echo=FALSE}
+subd = metadata(ivySE)$subBlockDetails
+dsub = dim(subd)
+```
+The subBlockDetails metadata (`r dsub[1]` x `r dsub[2]`)  includes feature quantifications.  The
+names of the quantification fields and their interpretation are
+```{r featanno,echo=FALSE}
+featanno = c("normalized_area_le"   =
+"Leading Edge (LE)",
+"normalized_area_lehbv" =
+"Hyperplastic blood vessels in leading edge (LEhbv)",
+"normalized_area_it"   =
+"Infiltrating Tumor (IT)",
+"normalized_area_ithbv" =
+"Hyperplastic blood vessels in infiltrating tumor (IThbv)",
+"normalized_area_ct"   =
+"Cellular Tumor (CT)",
+"normalized_area_ctpnz" =
+"Perinecrotic zone (CTpnz)",
+"normalized_area_cthbv" =
+"Hyperplastic blood vessels in cellular tumor (CThbv)",
+"normalized_area_ctpnn" =
+"Pseudopalisading cells but no visible necrosis (CTpnn)",
+"normalized_area_ctpan" =
+"Pseudopalisading cells around necrosis (CTpan)",
+"normalized_area_ctmvp" =
+"Microvascular proliferation (CTmvp)",
+"normalized_area_ctne" =
+"Necrosis (CTne)")
+featanno
+```
+
+# Exploring with the app
+
+The `ivyGlimpse` function starts a shiny app.  Use the mouse to select
+image features to scatterplot, and then select a region of the scatterplot
+to stratify the blocks into two groups.  Once the selection is made,
+the survival profiles of the groups are plotted, and expression
+patterns for genes in selected pathways can be compared.
