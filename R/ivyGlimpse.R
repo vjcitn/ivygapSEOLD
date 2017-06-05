@@ -48,7 +48,7 @@ ui = fluidPage(
  sidebarLayout(
   sidebarPanel(
    fluidRow(
-      helpText("IvyGAP explorer: expression, clinical, and image-based data for glioblastoma patients; see backgrouund panel for more details")
+      helpText("IvyGAP explorer: expression, clinical, and image-based data for glioblastoma patients; see background panel for more details")
    ),
    fluidRow(
       helpText("subBlockDetail features for selectables scatterplot")
@@ -62,6 +62,9 @@ ui = fluidPage(
    fluidRow(
     selectInput("gs", "cbioP sets", choices=names(someSets), selected=names(someSets)[1])
    ),
+   fluidRow(
+    helpText("Supported by NCI ITCR U01 CA214846 and U24 CA180996")
+   ),
    width=3
   ),
   mainPanel(
@@ -69,7 +72,7 @@ ui = fluidPage(
     tabPanel("basic",
      fluidRow(
       column( 
-       fluidRow( helpText("hover over for tumor donor ID; partition data by dragging over points to select") ),
+       fluidRow( helpText("hover over for tumor donor ID; partition data by dragging over points to select; click on a specific point to visit IvyGAP clinical specimen page for that sample") ),
        fluidRow( plotlyOutput("xyplot") ), width=5 ),
       column( 
        fluidRow( helpText("Kaplan-Meier, grp=1 for selected donors") ),
@@ -142,12 +145,17 @@ server = function(input, output, session) {
  sb = metadata(ivySE)$subBlockDetails
  sb = sb[!is.na(sb$survival_days),]
  output$xyplot = renderPlotly({
-   df = sb[, c(input$x, input$y, "donor_id", "molecular_subtype")]
+   df = sb[, c(input$x, input$y, "donor_id", "molecular_subtype",
+                "specimen_page_link")]
    df$donor_id = paste0("donor: ", df$donor_id)
    df$molm = molmap[df$molecular_subtype]
    p = ggplot(df, aes_(x=as.name(input$x), y=as.name(input$y), text=as.name("donor_id"))) + 
           geom_point() #data=df, mapping=aes_(colour=as.name("molm")))
-   ggplotly(p, source="subset", tooltip="text") %>% layout(dragmode="select") #plot(sb[, input$x], sb[, input$y], xlab=input$x, ylab=input$y )
+   gp = ggplotly(p, source="subset", tooltip="text") %>% layout(dragmode="select") #plot(sb[, input$x], sb[, input$y], xlab=input$x, ylab=input$y )
+   event.data <- event_data("plotly_click", source = "subset")
+   if (!is.null(event.data)) browseURL(df[event.data$pointNumber+1,
+       "specimen_page_link"])
+   gp
    })
  
 procSel = reactive({
@@ -163,7 +171,7 @@ procSel = reactive({
     })
  
  output$plot2 = renderPlot({
-    validate(need(!is.null(procSel()), "waiting for selection"))
+    validate(need(!is.null(procSel()), "waiting for (dragged) selection"))
     mm = procSel() #survfit(Surv(survival_days, rep(1,nrow(udf)))~grp, data=udf)
     suppressWarnings({ ggsurvplot(mm) })
    })
