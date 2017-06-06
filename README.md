@@ -1,6 +1,6 @@
 # ivygapSE
 
-This package provides a SummarizedExperiment for Ivy-GAP metadata.  See the [ivyGlimpse app](http://vjcitn.shinyapps.io/ivyGlimpse) and an [explanatory video](https://www.youtube.com/watch?v=4qJaodLEI5o).
+This package provides a SummarizedExperiment for Ivy-GAP metadata.  See the [ivyGlimpse app](http://vjcitn.shinyapps.io/ivyglimpse) and an [explanatory video](https://www.youtube.com/watch?v=4qJaodLEI5o).
 
 The metadata and expression data are
 as distributed by [Allen Institute for Brain Science](http://glioblastoma.alleninstitute.org/static/download.html) as of 31 May 2017.
