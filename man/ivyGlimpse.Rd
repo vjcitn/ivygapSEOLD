@@ -6,6 +6,12 @@
 \usage{
 ivyGlimpse()
 }
+\value{
+Side effect of starting the app only.
+}
 \description{
 simple app to explore image property quantifications in relation to survival and expression
+}
+\examples{
+if (interactive()) print(ivyGlimpse())
 }

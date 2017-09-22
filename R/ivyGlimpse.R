@@ -1,11 +1,20 @@
 #' simple app to explore image property quantifications in relation to survival and expression
 #' @import shiny
+#' @importFrom UpSetR upset
+#' @importFrom utils packageVersion
+#' @importFrom S4Vectors metadata
 #' @import survminer
 #' @import hwriter
 #' @import SummarizedExperiment
 #' @import survival
 #' @import plotly
-#' @import ggplot2
+#' @importFrom graphics boxplot par
+#' @importFrom stats median
+#' @importFrom utils browseURL data
+#' @rawNamespace import(ggplot2, except=last_plot)
+#' @return Side effect of starting the app only.
+#' @examples
+#' if (interactive()) print(ivyGlimpse())
 #' @export
 ivyGlimpse = function() {
 
@@ -37,6 +46,7 @@ attr(someSets, "fullTitle") = list(
 
 names(someSets) = unlist(attr(someSets, "fullTitle")[names(someSets)])
 
+ivySE = NULL
 data(ivySE)
 
 sb = metadata(ivySE)$subBlockDetails
@@ -83,8 +93,13 @@ ui = fluidPage(
       column( plotOutput("boxes2"), width=5 )
       )
      ),
-    tabPanel("vocab", tableOutput("vocab")),
+    tabPanel("vocabulary", tableOutput("vocab")),
     tabPanel("background", 
+     fluidRow(
+       textOutput("versinfo"),
+       textOutput("commentary"),
+       plotOutput("upset")
+       ),
      fluidRow(
        helpText("Read the ", a(href='http://help.brain-map.org/display/glioblastoma/Documentation?preview=/8028197/8454231/IvyOverview.pdf', 'Allen Institute Technical White Paper'))
       ),
@@ -163,10 +178,10 @@ procSel = reactive({
     if(is.null(event.data) == TRUE) return(NULL)
     dr = duplicated(sb$donor_id)
     udf <<- sb[-which(dr),]  # survfit does not find without <<-
-    udf$grp = 0
+    udf$grp <<- 0
     sdf = sb[event.data$pointNumber+1,]
     indo = sdf$donor_id
-    udf[which(udf$donor_id %in% indo),]$grp = 1
+    udf[which(udf$donor_id %in% indo),]$grp <<- 1
     survfit(Surv(survival_days, rep(1,nrow(udf)))~grp, data=udf)
     })
  
@@ -220,6 +235,28 @@ procSel = reactive({
              long=c(" ", as.character(molmap), " ", as.character(featanno)))
     })
   output$bkgrd = renderText( paste(metadata(ivySE)$README, collapse="\n") )
+  output$versinfo = renderText( paste0("ivygapSE version ", 
+                          as.character(packageVersion("ivygapSE"))) )
+  output$commentary = renderText( paste(
+       "This app introduces users to quantitative elements of the Ivy Glioblastoma Atlas project.",
+       "Tumors are divided into blocks and subblocks.  Subblocks are associated with",
+       "image-derived measures such as proportions of cells deemed infiltrating or cellular,",
+       "and with measures of gene expression derived from RNA-seq on 270=122+148 samples",
+       "microdissected after selection anatomic and molecular criteria.",
+       "'Donor' refers to the individual patient, and survival times are recorded for most patients.",
+       "This app allows interactive selection of (a) image features for scatterplotting,",
+       "(b) image sets for stratified survival distribution estimation,",
+       "and (c) gene sets for expression distribution comparison between strata.",
+       "More work is needed to define an interface that distinguishes origins of expression assays.",
+       "Data incompleteness is substantial and no effort is made to support",
+       "statistical hypothesis testing with this app.",
+       "The following upset diagram (see http://caleydo.org/tools/upset/) illustrates",
+       "data availability configurations for the image-derived tumor features.") )
+  output$upset = renderPlot({
+     md = metadata(ivySE)$subBlock
+     mm = md[,16:26]
+     upset(data.frame(1-is.na(mm)), 11)
+     })
  }
 shinyApp(ui=ui, server=server)
 }
