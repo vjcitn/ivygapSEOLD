@@ -1,7 +1,7 @@
 Package: ivygapSE
 Title: A SummarizedExperiment for Ivy-GAP data
 Description: Define a SummarizedExperiment and exploratory app for Ivy-GAP glioblastoma image, expression, and clinical data.
-Version: 0.99.1
+Version: 0.99.2
 Author: Vince Carey
 Suggests: knitr
 Depends: R (>= 3.4.0), SummarizedExperiment
