@@ -29,9 +29,9 @@ names(someSets) = unlist(attr(someSets, "fullTitle")[names(someSets)])
 
 
 
-library(plotly)
-
-library(ivygapSE)
+#library(plotly)
+#
+#library(ivygapSE)
 data(ivySE)
 
 

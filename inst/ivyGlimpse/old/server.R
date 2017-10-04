@@ -1,9 +1,9 @@
-library(shiny)
-library(ggplot2)
-library(plotly)
-library(survival)
-library(survminer)
-library(hwriter)
+#library(shiny)
+#library(ggplot2)
+#library(plotly)
+#library(survival)
+#library(survminer)
+#library(hwriter)
 
 
 
@@ -66,7 +66,7 @@ molmap = structure(c("NA", "C", "CM", "CN", "M", "MN", "N", "NP", "P"), .Names =
    ))
 
 server = function(input, output, session) {
- library(ivygapSE)
+# library(ivygapSE)
  data(ivySE)
  sb = metadata(ivySE)$subBlockDetails
  sb = sb[!is.na(sb$survival_days),]
