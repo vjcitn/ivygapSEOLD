@@ -1,6 +1,19 @@
 #' demonstration of gene set construction for ivyGlimpse app
-#' @note Should be replaced by selections from a general catalogy
-#' @return list of gene sets
+#' @note Should be replaced by selections from a general catalog.
+#' @return list of gene sets with attributes facilitating
+#' dropdown construction -- attr(,"fullTitle") is a list of strings
+#' associated with gene set elements (named list with vectors 
+#' of gene symbols constituting sets of interest) \cr
+#' List of 4 \cr
+#'  $ General: Ras-Raf-MEK-Erk/JNK signaling (26 genes) \cr                                      : chr [1:26] "KRAS" "HRAS" "BRAF" "RAF1" ... \cr
+#'  $ Glioblastoma: RTK/Ras/PI3K/AKT Signaling (17 genes) \cr                                    : chr [1:17] "EGFR" "ERBB2" "PDGFRA" "MET" ... \cr
+#'  $ General: PI3K-AKT-mTOR signaling (17 genes)            \cr                                : chr [1:17] "PIK3CA" "PIK3R1" "PIK3R2" "PTEN" ... \cr
+#'  $ Ovarian Cancer: Putative tumor-suppressor genes in epithelial ovarian cancer (16 genes) \cr : chr [1:16] "DIRAS3" "RASSF1" "DLEC1" "SPARC" ... \cr
+#'  - attr(*, "fullTitle")=List of 4 \cr
+#'   ..$ glioRTK  : chr "Glioblastoma: RTK/Ras/PI3K/AKT Signaling (17 genes)" \cr
+#'   ..$ pi3k     : chr "General: PI3K-AKT-mTOR signaling (17 genes)" \cr
+#'   ..$ ovtumsupp: chr "Ovarian Cancer: Putative tumor-suppressor genes in epithelial ovarian cancer (16 genes)" \cr
+#'   ..$ rasraf   : chr "General: Ras-Raf-MEK-Erk/JNK signaling (26 genes)" \cr
 #' @examples
 #' str(makeGeneSets())
 #' @export
