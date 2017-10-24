@@ -1,0 +1,13 @@
+name: ivyGlimpse
+title: ivyGlimpse
+username:
+account: vjcitn
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 186049
+bundleId: 1010955
+url: https://vjcitn.shinyapps.io/ivyglimpse/
+when: 1507141391.30808
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: old/server.R|old/ui.R

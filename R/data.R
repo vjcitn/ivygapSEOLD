@@ -46,3 +46,8 @@
 #' data(ivySE)
 #' names(metadata(ivySE))
 "ivySE"
+
+#' msigdb: 47 gene sets related to glioblastoma by 'Search Gene Sets' at msigdb
+#' @format GeneSetCollection
+#' @note Retrieved 20 Oct 2017, and imported with getGmt of GSEABase
+"glioGSC"

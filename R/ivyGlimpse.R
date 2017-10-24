@@ -21,11 +21,9 @@ ivyGlimpse = function() {
 ## START UI
 # define gene sets from cbioPortal
 
-    someSets = makeGeneSets()
-    
-    #ivySE = NULL
-    #data(ivySE)
-    load(system.file("data/ivySE.rda", package="ivygapSE"))
+#    someSets = makeGeneSets()
+    someSets = get(load(system.file("data/glioGSC.rda", package="ivygapSE")))
+    ivySE = get(load(system.file("data/ivySE.rda", package="ivygapSE")))
     
     sb = metadata(ivySE)$subBlockDetails
     sb = sb[!is.na(sb$survival_days),]
@@ -48,7 +46,10 @@ ivyGlimpse = function() {
         selectInput("y", "y", choices=feats, selected="normalized_area_ct")
        ), 
        fluidRow(
-        selectInput("gs", "cbioP sets", choices=names(someSets), selected=names(someSets)[1])
+        selectInput("gs", "MSigDb sets", choices=names(someSets), selected=names(someSets)[1])
+       ),
+       fluidRow(
+        sliderInput("lowfpkm", "lower bound on log median FPKM", min=0, max=8, value=0, step=.25)
        ),
        fluidRow(
         helpText("Supported by NCI ITCR U01 CA214846 and U24 CA180996")
@@ -155,7 +156,7 @@ ivyGlimpse = function() {
         suppressWarnings({ ggsurvplot(mm) })
        })
     
-     output$boxes1 = renderPlot({
+     filterForBoxplots = reactive({
         # Get subset based on selection
         event.data <- event_data("plotly_selected", source = "subset")
         # If NULL dont do anything
@@ -165,34 +166,35 @@ ivyGlimpse = function() {
         udf$grp = 0
         sdf = sb[event.data$pointNumber+1,]
         intu = sdf$tumor_name
-        seSEL = ivySE[someSets[[input$gs]], which(ivySE$tumor_name %in% intu)]
+        okids = intersect(rownames(ivySE), geneIds(someSets[[input$gs]]))
+        seSEL = ivySE[okids, which(ivySE$tumor_name %in% intu)]
+        seUNSEL = ivySE[okids, -which(ivySE$tumor_name %in% intu)]
         logp = function(x) log(x+1)
-        par(mar=c(5,4,2,2))
         meds = apply(assay(seSEL),1,median,na.rm=TRUE)
+        if (input$lowfpkm > 0) {
+           seSEL = seSEL[ which(log(meds+1) > input$lowfpkm), ]
+           seUNSEL = seUNSEL[ which(log(meds+1) > input$lowfpkm), ]
+           meds = apply(assay(seSEL),1,median,na.rm=TRUE)
+           }
         omeds = order(meds)
-        boxplot( data.frame(logp(t(assay(seSEL)[omeds,]))), main="in image subset", las=2, ylab="log fpkm",
+        list(sel=seSEL[omeds,], unsel=seUNSEL[omeds,])
+       })
+     output$boxes1 = renderPlot({
+        logp = function(x) log(x+1)
+        dat = filterForBoxplots()$sel
+        par(mar=c(5,4,2,2))
+        boxplot( data.frame(logp(t(assay(dat)))), main="in image subset", las=2, ylab="log fpkm",
           ylim=c(0,7))
        })
     
      output$boxes2 = renderPlot({
-        # Get subset based on selection
-        event.data <- event_data("plotly_selected", source = "subset")
-        # If NULL dont do anything
-        if(is.null(event.data) == TRUE) return(NULL)
-        dr = duplicated(sb$donor_id)
-        udf <<- sb[-which(dr),]
-        udf$grp = 0
-        sdf = sb[event.data$pointNumber+1,]
-        intu = sdf$tumor_name
-        seSEL = ivySE[someSets[[input$gs]], which(ivySE$tumor_name %in% intu)] # for ordering
-        meds = apply(assay(seSEL),1,median,na.rm=TRUE)
-        omeds = order(meds)
-        seUNSEL = ivySE[someSets[[input$gs]], -which(ivySE$tumor_name %in% intu)]
         logp = function(x) log(x+1)
+        dat = filterForBoxplots()$unsel
         par(mar=c(5,4,2,2))
-        boxplot( data.frame(logp(t(assay(seUNSEL)[omeds,]))), main="not in image subset", las=2, ylab="log fpkm",
-            ylim=c(0,7))
+        boxplot( data.frame(logp(t(assay(dat)))), main="not in image subset", las=2, ylab="log fpkm",
+          ylim=c(0,7))
        })
+
       output$vocab = renderTable({
         plop = function(x) gsub("^", " ", x)
         data.frame(short=c("_Molec. subtype_", names(molmap), "_Feature_", names(featanno)), 
