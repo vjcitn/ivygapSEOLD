@@ -4,7 +4,7 @@ Description: Define a SummarizedExperiment and exploratory app for Ivy-GAP gliob
 Version: 0.99.8
 Author: Vince Carey
 Suggests: knitr
-Depends: R (>= 3.4.0), SummarizedExperiment
+Depends: R (>= 3.4.0), SummarizedExperiment, GSEABase
 Imports: shiny, survival, survminer, hwriter, plotly, ggplot2, S4Vectors,
 	graphics, stats, utils, UpSetR
 Maintainer: VJ Carey <stvjc@channing.harvard.edu>
